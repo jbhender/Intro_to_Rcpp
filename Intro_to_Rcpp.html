@@ -222,9 +222,6 @@ div.tocify {
 </div>
 
 
-<div id="about-this-workshop" class="section level2">
-<h2>About this Workshop</h2>
-</div>
 <div id="why-use-rcpp" class="section level2">
 <h2>Why use Rcpp?</h2>
 <div id="performance" class="section level3">
@@ -260,12 +257,12 @@ div.tocify {
 <div id="installing-rcpp" class="section level2">
 <h2>Installing Rcpp</h2>
 <p>Install the <strong>R</strong> package <code>Rcpp</code> using, i.e. <code>install.packages('Rcpp')</code>. If working on a remote server you may first need to point <em>R</em> to the location of your package library, i.e. <code>.libPaths('~/Rlib')</code>.</p>
-<p>It will also be useful to install <code>RcppArmadillo</code>: <code>install.packages('RcppAramdillo')</code></p>
 <p>To use locally, you will need a C++ compiler such as <code>gcc</code>, <code>g++</code> or <code>clang</code>.<br />
-Mac users should install Xtools from the app store.</p>
+Mac users should install Xcode from the app store.</p>
 </div>
 <div id="calling-c-from-r" class="section level2">
 <h2>Calling C from R</h2>
+<p>Before delving into Rcpp, let’s do a quick review of how to call compiled <strong>C</strong> code from <strong>R</strong>.</p>
 <p><a href="./CallingCfromR.html">Calling C from R</a></p>
 </div>
 <div id="using-rcpp" class="section level2">
@@ -277,6 +274,15 @@ Mac users should install Xtools from the app store.</p>
 <li><p><a href="https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-quickref.pdf">Quick reference card</a></p></li>
 <li><p>Hadley Wickham’s Rcpp <a href="http://adv-r.had.co.nz/Rcpp.html">tutorial</a></p></li>
 </ul>
+</div>
+<div id="c-references" class="section level3">
+<h3>C++ references</h3>
+<p>Rcpp provides a number of variable types similar to familiar <strong>R</strong> and the quick reference above is a good place to start. Below are a few references for learning more <strong>C++</strong> as you go along:</p>
+<ul>
+<li><a href="http://www.cplusplus.com/doc/tutorial/">Cplusplus.com<a></li>
+<li><a href="https://www.tutorialspoint.com/cplusplus/">Tutorial Point</a></li>
+</ul>
+<p>You should focus intitially on standard types, along with the classes and associated methods from the standard library (STL or “std”).</p>
 </div>
 <div id="using-c-libraries" class="section level3">
 <h3>Using C++ libraries</h3>
@@ -296,6 +302,15 @@ Mac users should install Xtools from the app store.</p>
 <h4>Example 1</h4>
 <p><a href="./Example1.html">Example 1: sourceCpp()</a></p>
 </div>
+<div id="example-2" class="section level4">
+<h4>Example 2</h4>
+<p>Our second example involves tabulating the observed transitions from a finite state Markov chain. It is based on the scripts below:</p>
+<ul>
+<li><a href="./examples/MarkovExample.R">MarkovExample.R</a></li>
+<li><a href="./examples/simObs.cpp">simObs.cpp</a></li>
+<li><a href="./examples/countTransitions.cpp">countTransitions.cpp</a></li>
+</ul>
+</div>
 <div id="error-checking-and-exceptions" class="section level4">
 <h4>Error checking and exceptions</h4>
 <p>It is good programing practice to do some error checking at the start of a function to ensure that values passed using arguments conform to expectations.</p>
@@ -305,15 +320,29 @@ Mac users should install Xtools from the app store.</p>
 </div>
 <div id="printing-to-the-console" class="section level4">
 <h4>Printing to the console</h4>
-<p>While it is generally recommended to use a debugging tool to find errors in code, I often debug by hand using messages printed to the console.</p>
-</div>
-<div id="exercises" class="section level4">
-<h4>Exercises</h4>
+<p>While it is generally recommended to use a debugging tool to find errors in code, I often debug by hand using messages printed to the console. This can be done using the <code>Rcpp::Rcout</code> variable:</p>
+<pre><code>#include &lt;Rcpp.h&gt;
+using namespace Rcpp; 
+
+// more code
+
+  Rcout &lt;&lt; &quot;Print your mesage and maybe a variable: &quot; &lt;&lt; var &lt;&lt; std::endl; 
+
+// more code</code></pre>
 </div>
 </div>
 <div id="using-rcpp-in-an-r-package" class="section level3">
 <h3>Using Rcpp in an R package</h3>
-<p>For all but the simplest projects in <strong>R</strong>, it is usually worthwhile to organize the code base using an R package. You can set up an empty R package use <code>devtools::create</code>. To include Rcpp functions in an R package, place the <strong>C++</strong> source code in the <code>src</code> directory. Before building or installing the package, use `Rcpp::compileAttributes()’ to automatically generate wrappers that handle translations between <strong>R</strong> and <strong>C++</strong> types.</p>
+<p>It is often worthwhile to organize the code base for a project using an R package. You can set up an empty R package use <code>devtools::create</code>. To include Rcpp functions in an R package, place the <strong>C++</strong> source code in the <code>src</code> directory. Before building or installing the package, use <code>Rcpp::compileAttributes()</code> to automatically generate wrappers that handle translations between <strong>R</strong> and <strong>C++</strong> types.</p>
+<p>A common workflow in this instance would be:</p>
+<ol style="list-style-type: decimal">
+<li>Modify one or more <strong>C++</strong> files.<br />
+</li>
+<li>If you’ve changed what gets passed to or from <strong>R</strong> call <code>Rcpp::compileAttributes('path/to/package/)</code>.</li>
+<li>Run <code>R CMD BUILD</code> and perhaps also <code>R CMD check</code> from the command line, or alternately <code>devtools::build('path/to/package')</code> from the console, to rebuild the package.<br />
+</li>
+<li>Go through some testing process to check your code.</li>
+</ol>
 </div>
 </div>
 

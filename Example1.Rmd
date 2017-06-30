@@ -63,4 +63,22 @@ print(microbenchmark(getRegion_loop(x,y),getRegion_vec(x,y),getRegion_all(x,y),
 ```
 
 #### Exercises
+
+1. Write an R function to identify coordinates in the regions 
+between the lines $y=-\frac{1}{2}x$ and $y=2x$ as labeled below:
+
+```{r,echo=FALSE}
+x = c(1,-1,-1,1); y=c(1,1,-1,-1)
+data.frame(x=x,y=y) %>%
+  ggplot(aes(x=x,y=y)) + theme_minimal() + 
+  xlim(c(-3,3)) + ylim(c(-3,3)) + geom_abline(slope=c(-.5,2)) + 
+  geom_label(label=1:4,fill='gold')
+```
+
+2. Write a **C++** function for the same task.
+
+3. Compare the computation times of your implementation using `microbenchmark`.
+How is this example different than the previous one?
+
+
 <a href='./Intro_to_Rcpp.html'>Back</a> to main page.

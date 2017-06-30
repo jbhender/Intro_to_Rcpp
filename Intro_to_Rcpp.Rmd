@@ -14,8 +14,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## About this Workshop
-
 ## Why use Rcpp?
 
 ### Performance
@@ -67,12 +65,13 @@ Install the **R** package `Rcpp` using, i.e. `install.packages('Rcpp')`. If work
 on a remote server you may first need to point *R* to the location of your package 
 library, i.e. `.libPaths('~/Rlib')`.
 
-It will also be useful to install `RcppArmadillo`: `install.packages('RcppAramdillo')`
-
 To use locally, you will need a C++ compiler such as `gcc`, `g++` or `clang`.  
-Mac users should install Xtools from the app store.  
+Mac users should install Xcode from the app store.  
 
 ## Calling C from R
+
+Before delving into Rcpp, let's do a quick review of how to call compiled **C** code
+from **R**.
 
 <a href='./CallingCfromR.html'>Calling C from R</a>
 
@@ -85,6 +84,18 @@ Mac users should install Xtools from the app store.
   + <a href="https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-quickref.pdf">Quick reference card</a>
   
   + Hadley Wickham's Rcpp <a href="http://adv-r.had.co.nz/Rcpp.html">tutorial</a>
+
+### C++ references
+
+Rcpp provides a number of variable types similar to familiar **R** and the quick
+reference above is a good place to start.  Below are a few references for learning
+more **C++** as you go along:
+
+  + <a href="http://www.cplusplus.com/doc/tutorial/">Cplusplus.com<a>
+  + <a href="https://www.tutorialspoint.com/cplusplus/">Tutorial Point</a>
+
+You should focus intitially on standard types, along with the classes and
+associated methods from the standard library (STL or "std").
 
 ### Using C++ libraries
 
@@ -111,6 +122,14 @@ Be sure to:
 
 <a href='./Example1.html'>Example 1: sourceCpp()</a>
 
+#### Example 2
+Our second example involves tabulating the observed transitions from a finite
+state Markov chain. It is based on the scripts below:
+
+  + <a href='./examples/MarkovExample.R'>MarkovExample.R</a>
+  + <a href='./examples/simObs.cpp'>simObs.cpp</a>
+  + <a href='./examples/countTransitions.cpp'>countTransitions.cpp</a>
+
 #### Error checking and exceptions 
 It is good programing practice to do some error checking at the start of a
 function to ensure that values passed using arguments conform to expectations. 
@@ -128,16 +147,33 @@ for more on exception-handling.
 
 While it is generally recommended to use a debugging tool to find errors in code,
 I often debug by hand using messages printed to the console. This can be done 
-using the `Rcpp::Rcout` attribute.
+using the `Rcpp::Rcout` variable:
 
+```
+#include <Rcpp.h>
+using namespace Rcpp; 
 
-#### Exercises
+// more code
+
+  Rcout << "Print your mesage and maybe a variable: " << var << std::endl; 
+
+// more code
+```
 
 ### Using Rcpp in an R package
 
-For all but the simplest projects in **R**, it is usually worthwhile to organize the code
-base using an R package.  You can set up an empty R package use `devtools::create`.
+It is often worthwhile to organize the code
+base for a project using an R package.  You can set up an empty R package use `devtools::create`.
 To include Rcpp functions in an R package, place the **C++** source code in the `src` directory.
-Before building or installing the package, use `Rcpp::compileAttributes()' to 
+Before building or installing the package, use `Rcpp::compileAttributes()` to 
 automatically generate wrappers that handle translations between **R** and **C++** types.
+
+A common workflow in this instance would be:
+
+  1. Modify one or more **C++** files.  
+  2. If you've changed what gets passed to or from **R** call `Rcpp::compileAttributes('path/to/package/)`.
+  3. Run `R CMD BUILD` and perhaps also `R CMD check` from the command line, or alternately
+     `devtools::build('path/to/package')` from the console, to rebuild the package.  
+  4. Go through some testing process to check your code.
+  
 
