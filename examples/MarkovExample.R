@@ -1,6 +1,6 @@
 ## Use Rcpp to count transitons of a finite state Markov chain ##
 
-library(microbenchmark)
+library(Rcpp); library(microbenchmark)
 
 ## create functions using sourceCppp ##
 sourceCpp("simObs.cpp")

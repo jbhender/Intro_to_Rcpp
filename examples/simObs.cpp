@@ -43,6 +43,7 @@ int my_sample(NumericVector prob){
   return i;
 }  
 
+// You can embed code to be run in R for testing 
 /*** R
 nStates = 3
 states = 0:{nStates-1}
@@ -57,5 +58,4 @@ nStates,nStates,byrow=TRUE) # matrix of transition probabilities P[i,j]
   Obs = simObs(sample(0:2,10,replace=TRUE),4,3,P)
   colnames(Obs) = paste0('ID',1:ncol(Obs))
   rownames(Obs) = paste0('Step',1:nrow(Obs))
-*/
 */
