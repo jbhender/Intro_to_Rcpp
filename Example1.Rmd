@@ -1,0 +1,66 @@
+---
+title: 'Example 1: Using sourceCPP()'
+author: "James Henderson, PhD"
+date: "June 30, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<a href='./Intro_to_Rcpp.html'>Back</a> to main page.
+
+#### Example 1: Identifying Points in Regions
+
+##### The task 
+In this example, we identify which of eight regions each point in a scatter plot belongs to.
+
+```{r,echo=TRUE,include=FALSE}
+library(ggplot2); library(dplyr)
+```
+
+```{r,echo=FALSE}
+x = c(1,0,-1,0,1,1,1,1); y = c(0,1,0,-1,0,0,0,0)
+data.frame(x=x,y=y) %>%
+  ggplot(aes(x=x,y=y)) + theme_minimal() + 
+  geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=0)) +
+  geom_path() + xlim(c(-3,3)) + ylim(c(-3,3)) + 
+  geom_label(x=c(1,-1,-1,1,.25,-.25,-.25,.25),y=c(1,1,-1,-1,.25,.25,-.25,-.25),label=1:8,fill='gold')
+```
+
+##### R functions
+<a href='./examples/getRegion.R'>getRegion.R</a>
+
+##### C++ function
+<a href='./examples/getRegion.cpp'>getRegion.cpp</a>
+
+```{r,EightRegions}
+library(Rcpp)
+sourceCpp('examples/getRegion.cpp')
+source('examples/getRegion.R')
+```
+
+```{r,EightRegionCheck}
+n = 1e3; x = rnorm(n,0,.5); y = rnorm(n,.1,1)
+Regions = data.frame(
+  x = x, y=y,
+  R_loop = getRegion_loop(x,y),
+  R_vec  = getRegion_vec(x,y),
+  R_all  = getRegion_all(x,y),
+  CPP    = getRegionCPP(x,y)
+)
+## Test that there are no discrepencies
+with(Regions,!{any(R_loop!=R_vec) | any(R_vec!=R_all) | any(R_vec!=CPP)})
+Regions %>% mutate(Region=factor(CPP)) %>% ggplot(aes(x=x,y=y,color=Region)) +
+  geom_point() + theme_minimal()
+```
+
+```{r,EightRegionTiming}
+library(microbenchmark)
+print(microbenchmark(getRegion_loop(x,y),getRegion_vec(x,y),getRegion_all(x,y),
+                     getRegionCPP(x,y)),digits=2)
+```
+
+#### Exercises
+<a href='./Intro_to_Rcpp.html'>Back</a> to main page.

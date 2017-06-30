@@ -1,0 +1,110 @@
+---
+title: "Calling C from R"
+author: "James Henderson, PhD"
+date: "June 30, 2017"
+output: html_document
+---
+
+<a href='./Intro_to_Rcpp.html'>Back</a> to main page.
+
+## Calling C from R 
+
+Before getting into Rcpp examples, we will review how to incorporate compiled
+code into **R** as detailed in the 
+<a href=https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Interface-functions-_002eC-and-_002eFortran>
+R manual</a>.
+
+#### Overview
+The key steps are:
+
+  0. Write some C code.
+  1. Compile the code using `R CMD SHLIB`.
+  2. Write an R function to call that code using `.C()` or `.Call()`.
+  3. Load the compiled library using `dyn.load()`.
+
+#### C functions for R
+
+When writing C functions for R keep in mind the following:
+
+  0. Objects in these languages need to be declared before use.
+  1. The return type should always be `void`. Results can be passed back to R
+     by modifying an object created in R for this purpose.
+  2. Vectors in **C** and **C++** are indexed from 0.
+  3. Lines should be ended with a semi-colon `;`
+
+#### Compilation
+
+The shell command `R CMD SHLIB myFuncC.c` first __compiles__ the **C** code in
+`myFuncC.c` creating `myFuncC.o` and then makes it accessible to **R** through a 
+shared library `myFuncC.so`.
+
+When compiled within a package all functions in the `/src` directory will
+share a single shared library `pkg.so`.
+
+#### R wrappers for calls to C
+
+Compiled **C** functions can be called from **R** using `.C() or `.Call()`. All such calls
+should be wrapped within an **R** function (of the same name) in order to handle
+error checking, type conversion, return values, etc.
+
+#### Example
+
+As an example, we will compare the performance of two functions for computing 
+Fibonocci numbers $x_n = x_{n-1} + x_{n-2}$ :
+$$
+\{x_n\}_{n=1} = 1, 1, 2, 3, 5, 8, 13, 21, ...
+$$
+The source code for these examples is in:
+
+  + <a href='./examples/Fib.R'>Fib.R</a>
+  
+  + <a href='./examples/FibC.R'>FibC.R</a>
+  
+  + <a href='./examples/C_FibC.c'>C_FibC.c</a>
+  
+```{r}
+library(microbenchmark)
+source('./examples/Fib.R')
+source('./examples/FibC.R')
+dyn.load('examples/C_FibC.so')
+Fib(10)
+FibC(10)
+FibBenchMark = microbenchmark(Fib(100),FibC(100),FibC_noCoerce(100))
+print(FibBenchMark,order='median',digits=3)
+options(microbenchmark.unit="relative")
+print(FibBenchMark,order='median',digits=3)
+boxplot(FibBenchMark)
+```
+
+
+### Exercises
+0. Login to one of the ITS servers using a shell application:
+
+  > ssh mario.dsc.umich.edu
+
+or
+
+  > ssh luigi.dsc.umich.edu
+
+1. Download the workshop files using git:
+
+  > git clone https://github.com/jbhender/Intro_to_Rcpp/
+  
+  and move to the `exmaples` folder
+  
+  > cd Intro_to_Rcpp/examples/
+
+2. Compile to a shared object using:
+  
+  > R CMD SHLIB FibC.c
+  
+3. Open R and use `source` to read FibFunc.R into the workspace. Call
+   `FibFunc(10)` and observe the error message.
+
+4. Load the shared object into R and call `FibFunc(10)` again:
+
+  > dyn.load('Fibonacci.so')
+
+  
+<a href='./Intro_to_Rcpp.html'>Back</a> to main page.
+
