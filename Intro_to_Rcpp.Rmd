@@ -126,9 +126,9 @@ Be sure to:
 Our second example involves tabulating the observed transitions from a finite
 state Markov chain. It is based on the scripts below:
 
-  + <a href='./examples/MarkovExample.R'>MarkovExample.R</a>
-  + <a href='./examples/simObs.cpp'>simObs.cpp</a>
-  + <a href='./examples/countTransitions.cpp'>countTransitions.cpp</a>
+  + <a href='./MarkovExample.R'>MarkovExample.R</a>
+  + <a href='./simObs.cpp'>simObs.cpp</a>
+  + <a href='./countTransitions.cpp'>countTransitions.cpp</a>
 
 #### Error checking and exceptions 
 It is good programing practice to do some error checking at the start of a
